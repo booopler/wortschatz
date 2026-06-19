@@ -1,0 +1,326 @@
+/* =========================================
+   1. BASE & TYPOGRAPHY
+   ========================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Courier Prime', monospace;
+    background-color: #121212;
+    color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; 
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+h1 { font-size: 40px; margin-bottom: 10px; transition: color 0.3s ease; }
+h2 { font-size: 28px; margin-bottom: 20px; color: #B9BCAE; }
+
+/* =========================================
+   2. MAIN LAYOUT & SCREENS
+   ========================================= */
+.container {
+    background: #1e1e1e;
+    padding: 40px 30px;
+    border-radius: 28px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+}
+
+.screen {
+    animation: smoothFade 0.4s ease-out forwards;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#topSessionTimer {
+    font-size: 40px; 
+    margin-bottom: 10px; 
+    color: #B9BCAE;
+}
+
+/* =========================================
+   3. SETUP SCREEN (Difficulty Buttons)
+   ========================================= */
+.setup-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+.diff-btn {
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: bold;
+    background: #2a2a2a;
+    border: 3px solid #B9BCAE;
+    border-radius: 16px;
+    color: #B9BCAE;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.diff-btn:hover { background-color: #333333; }
+.diff-btn.active {
+    background: #B9BCAE;
+    color: #121212;
+    box-shadow: 0 0 15px rgba(185, 188, 174, 0.5);
+}
+
+/* =========================================
+   4. GAMEPLAY UI & SLOTS
+   ========================================= */
+.slots {
+    display: flex;
+    justify-content: center; 
+    margin: 40px auto 35px auto;       
+}
+
+.slot-container { width: 100%; max-width: 450px; }
+
+.slot {
+    position: relative; 
+    font-size: 30px;
+    font-weight: bold;
+    background: #2a2a2a;
+    border: 3px solid #B9BCAE;
+    border-radius: 16px; 
+    width: 100%;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #B9BCAE;
+    user-select: none;
+    padding: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.3s ease;
+}
+
+.bg-timer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 100px;
+    line-height: 0; 
+    margin-top: 7px; 
+    color: rgba(185, 188, 174, 0.02); 
+    z-index: 0; 
+    pointer-events: none;
+}
+
+.word-text {
+    position: relative;
+    z-index: 1; 
+    pointer-events: none;
+}
+
+.bg-timer.warning {
+    color: rgba(255, 85, 85, 0.15); 
+    text-shadow: 0 0 15px rgba(255, 85, 85, 0.2);
+    animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both infinite;
+}
+
+.slot.spinning {
+    color: transparent;
+    text-shadow: 0 0 12px rgba(185, 188, 174, 0.8);
+    opacity: 0.4;
+    transform: scale(0.96); 
+}
+
+.slot.correct {
+    border-color: #55ff55;
+    box-shadow: 0 0 20px rgba(85, 255, 85, 0.4), inset 0 0 10px rgba(85, 255, 85, 0.2);
+    color: #55ff55;
+}
+
+.slot.wrong {
+    border-color: #ff5555;
+    box-shadow: 0 0 20px rgba(255, 85, 85, 0.4), inset 0 0 10px rgba(255, 85, 85, 0.2);
+    color: #ff5555;
+}
+
+@keyframes shake {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    25% { transform: translate(calc(-50% - 2px), calc(-50% + 2px)) rotate(-2deg); }
+    50% { transform: translate(-50%, -50%) rotate(0deg); }
+    75% { transform: translate(calc(-50% + 2px), calc(-50% - 2px)) rotate(2deg); }
+    100% { transform: translate(-50%, -50%) rotate(0deg); }
+}
+
+/* =========================================
+   5. INTERACTIVE SELECTION BUTTONS
+   ========================================= */
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 30px; 
+}
+
+.option-btn {
+    background-color: #B9BCAE;
+    color: #121212;
+    border: none; 
+    padding: 20px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 12px; 
+    cursor: pointer;
+    opacity: 0; 
+    animation: smoothFade 0.4s ease-out forwards;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.option-btn:not(:disabled):hover {
+    background-color: #3a3a14;
+    color: #ffff55;
+}
+
+.option-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.option-btn.correct {
+    background-color: #1b381b !important;
+    color: #55ff55 !important;
+}
+
+.option-btn.wrong {
+    background-color: #3d1d1d !important;
+    color: #ff5555 !important;
+}
+
+/* =========================================
+   6. GAME ACTION BUTTONS 
+   ========================================= */
+.action-btn {
+    position: relative;        
+    z-index: 2;                
+    background-color: transparent; 
+    border: none;
+    font-size: 20px;          
+    font-weight: bold;
+    border-radius: 100px; 
+    cursor: pointer;
+    font-family: inherit;
+    width: 280px; 
+    height: 106px; 
+    margin-bottom: 30px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+#startButton, #restartButton { color: #121212; }
+#startButton:hover, #restartButton:hover { color: #B9BCAE; }
+
+.action-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 100px;
+    z-index: -1;                
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#startButton::before, #restartButton::before { background-color: #B9BCAE; }
+#startButton:hover::before, #restartButton:hover::before {
+    background-color: #222622; 
+    box-shadow: 0 0 15px rgba(185, 188, 174, 0.4); 
+    transform: scale(1.05);    
+}
+
+.stop-btn { color: #121212; }
+.stop-btn::before { background-color: #ffaaaa; }
+.stop-btn:hover { color: #ffaaaa; }
+.stop-btn:hover::before {
+    background-color: #3d1d1d; 
+    box-shadow: 0 0 15px rgba(255, 170, 170, 0.4); 
+    transform: scale(1.05);
+}
+
+/* =========================================
+   7. RESULTS PAGE BOARD & COLORS
+   ========================================= */
+.results-box {
+    background: #252525;
+    border-radius: 16px;
+    padding: 40px 25px;
+    max-width: 400px;
+    margin: 20px auto 30px auto;
+    text-align: center;
+}
+
+.accuracy-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.accuracy-number {
+    font-size: 80px;
+    font-weight: bold;
+    line-height: 1;
+    margin-bottom: 15px;
+}
+
+.accuracy-label {
+    font-size: 20px;
+    color: #e0e0e0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Dynamic Accuracy Colors */
+.acc-green { color: #55ff55; text-shadow: 0 0 8px rgba(85, 255, 85, 0.3); }
+.acc-yellow-green { color: #aaff55; text-shadow: 0 0 8px rgba(170, 255, 85, 0.3); }
+.acc-yellow { color: #ffff55; text-shadow: 0 0 8px rgba(255, 255, 85, 0.3); }
+.acc-orange { color: #ffaa55; text-shadow: 0 0 8px rgba(255, 170, 85, 0.3); }
+.acc-red { color: #ff5555; text-shadow: 0 0 8px rgba(255, 85, 85, 0.3); }
+.acc-default { color: #B9BCAE; }
+
+/* =========================================
+   8. RESPONSIVE DESIGN & ANIMATION CLASSES
+   ========================================= */
+@media (max-width: 600px) {
+    .options-grid { grid-template-columns: 1fr; gap: 12px; }
+    h1 { font-size: 28px; }
+    .slot { font-size: 24px; height: 100px; }
+}
+
+.fade-in-anim {
+    animation: smoothFade 0.4s ease-out forwards !important;
+}
+
+.fade-out-anim {
+    animation: smoothFadeOut 0.4s ease-out forwards !important;
+}
+
+@keyframes smoothFade {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes smoothFadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(10px); }
+}
