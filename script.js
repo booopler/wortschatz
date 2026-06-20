@@ -136,13 +136,33 @@ function stopGame() {
 }
 
 /**
- * Formats and updates the top timer string based on game mode.
+ * Formats and updates the top timer string and applies dynamic warning colors.
  */
 function updateSessionTimerDisplay() {
     const timeToFormat = sessionTimeLeft === Infinity ? endlessElapsedTime : sessionTimeLeft;
     const minutes = Math.floor(timeToFormat / 60);
     const seconds = timeToFormat % 60;
     topSessionTimer.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+    // Reset color classes before applying the new one
+    topSessionTimer.className = '';
+
+    // If endless mode, keep it teal. Otherwise, apply the countdown color breakdown.
+    if (sessionTimeLeft === Infinity) {
+        topSessionTimer.classList.add('acc-default');
+    } else {
+        if (sessionTimeLeft >= 30) {
+            topSessionTimer.classList.add('acc-default');
+        } else if (sessionTimeLeft > 23) { // 29s to 24s
+            topSessionTimer.classList.add('acc-yellow-green');
+        } else if (sessionTimeLeft > 16) { // 23s to 18s
+            topSessionTimer.classList.add('acc-yellow');
+        } else if (sessionTimeLeft > 9) { // 17s to 10s
+            topSessionTimer.classList.add('acc-orange');
+        } else {                           // 9s to 0s
+            topSessionTimer.classList.add('acc-red');
+        }
+    }
 }
 
 // --- GAMEPLAY MECHANICS ---

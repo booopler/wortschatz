@@ -209,7 +209,7 @@ h2 {
 .option-btn:not(:disabled):hover {
     background-color: #d1d4c5;
     color: #121212;
-    box-shadow: 0 0 20px rgba(185, 188, 174, 0.8);
+    box-shadow: 0 0 15px rgba(185, 188, 174, 0.4);
     transform: scale(1.05);
 }
 
@@ -325,12 +325,12 @@ h2 {
 }
 
 /* Dynamic Accuracy Colors */
-.acc-green { color: #b8ffb8; text-shadow: 0 0 8px rgba(184, 255, 184, 0.3); }
-.acc-yellow-green { color: #dbffb8; text-shadow: 0 0 8px rgba(219, 255, 184, 0.3); }
-.acc-yellow { color: #ffffb8; text-shadow: 0 0 8px rgba(255, 255, 184, 0.3); }
-.acc-orange { color: #ffdbb8; text-shadow: 0 0 8px rgba(255, 219, 184, 0.3); }
-.acc-red { color: #ffb8b8; text-shadow: 0 0 8px rgba(255, 184, 184, 0.3); }
-.acc-default { color: #b9bcae; }
+.acc-green { color: #b8ffb8 !important; text-shadow: 0 0 8px rgba(184, 255, 184, 0.3); }
+.acc-yellow-green { color: #dbffb8 !important; text-shadow: 0 0 8px rgba(219, 255, 184, 0.3); }
+.acc-yellow { color: #ffffb8 !important; text-shadow: 0 0 8px rgba(255, 255, 184, 0.3); }
+.acc-orange { color: #ffdbb8 !important; text-shadow: 0 0 8px rgba(255, 219, 184, 0.3); }
+.acc-red { color: #ffb8b8 !important; text-shadow: 0 0 8px rgba(255, 184, 184, 0.3); }
+.acc-default { color: #b9bcae !important; }
 
 /* =========================================
    8. RESPONSIVE DESIGN & ANIMATION CLASSES
