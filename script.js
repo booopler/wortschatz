@@ -1,23 +1,28 @@
-// DOM Element Declarations
+// --- DOM ELEMENT DECLARATIONS ---
 const mainTitle = document.getElementById('mainTitle');
 const topSessionTimer = document.getElementById('topSessionTimer');
+
+// Screens
 const setupScreen = document.getElementById('setupScreen');
 const gameScreen = document.getElementById('gameScreen');
 const resultsScreen = document.getElementById('resultsScreen');
 
+// Setup Controls
 const diffBtns = document.querySelectorAll('.diff-btn');
 const startButton = document.getElementById('startButton');
+
+// Game & Results Controls
 const stopButton = document.getElementById('stopButton');
 const restartButton = document.getElementById('restartButton');
 
+// Gameplay Elements
 const wordSlot = document.getElementById('wordSlot');
 const optionsContainer = document.getElementById('optionsContainer');
 const wordTimerValue = document.getElementById('wordTimerValue');
 const wordText = document.getElementById('wordText');
-
 const accuracyPercentText = document.getElementById('accuracyPercent');
 
-// Game State Variables
+// --- GAME STATE VARIABLES ---
 let sessionTimeLeft = 0;
 let wordTimeLeft = 10;
 let sessionInterval = null;
@@ -28,14 +33,15 @@ let currentWordPair = null;
 let correctCount = 0;
 let totalCount = 0;
 let answerSelected = false;
-let selectedDuration = "300"; 
-let endlessElapsedTime = 0;    
+let selectedDuration = "300"; // Default: Medium (300 seconds)
+let endlessElapsedTime = 0;
 
-// Event Listeners
+// --- EVENT LISTENERS ---
 startButton.addEventListener('click', startGame);
 stopButton.addEventListener('click', stopGame);
 restartButton.addEventListener('click', showSetup);
 
+// Difficulty button toggle logic
 diffBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
         diffBtns.forEach(b => b.classList.remove('active'));
@@ -44,7 +50,13 @@ diffBtns.forEach(btn => {
     });
 });
 
-// Universal Transition Controller
+/**
+ * Universal Transition Controller
+ * Handles fading logic between DOM element views.
+ * * @param {HTMLElement[]} hideEls - Array of elements to hide
+ * @param {HTMLElement[]} showEls - Array of elements to display
+ * @param {Function} action - Callback to execute during transition
+ */
 function transitionTo(hideEls, showEls, action) {
     hideEls.forEach(el => {
         if (!el.classList.contains('hidden')) {
@@ -53,6 +65,7 @@ function transitionTo(hideEls, showEls, action) {
         }
     });
     
+    // Wait for fade-out animation to finish before proceeding
     setTimeout(() => {
         hideEls.forEach(el => {
             el.classList.add('hidden');
@@ -68,14 +81,21 @@ function transitionTo(hideEls, showEls, action) {
     }, 400);
 }
 
+// --- GAME LIFECYCLE ---
+
+/**
+ * Initializes a new game session.
+ */
 function startGame() {
     if (questionTimeout) clearTimeout(questionTimeout);
     
     transitionTo([setupScreen, resultsScreen, mainTitle], [gameScreen, topSessionTimer], () => {
+        // Reset states
         correctCount = 0;
         totalCount = 0;
         endlessElapsedTime = 0; 
         
+        // Parse time limits
         if (selectedDuration === "infinite") {
             sessionTimeLeft = Infinity;
         } else {
@@ -84,6 +104,7 @@ function startGame() {
 
         updateSessionTimerDisplay();
         
+        // Start Master Session Timer
         sessionInterval = setInterval(() => {
             if (sessionTimeLeft === Infinity) {
                 endlessElapsedTime++; 
@@ -93,6 +114,7 @@ function startGame() {
             
             updateSessionTimerDisplay();
             
+            // End condition
             if (sessionTimeLeft <= 0 && sessionTimeLeft !== Infinity) {
                 endGame();
             }
@@ -102,16 +124,20 @@ function startGame() {
     });
 }
 
+/**
+ * Prematurely aborts the current session and returns to setup.
+ */
 function stopGame() {
-    if (sessionInterval) clearInterval(sessionInterval);
-    if (wordInterval) clearInterval(wordInterval);
-    if (questionTimeout) clearTimeout(questionTimeout);
+    clearAllIntervals();
     
     transitionTo([gameScreen, topSessionTimer], [setupScreen, mainTitle], () => {
         mainTitle.innerText = "Wortschatz";
     });
 }
 
+/**
+ * Formats and updates the top timer string based on game mode.
+ */
 function updateSessionTimerDisplay() {
     const timeToFormat = sessionTimeLeft === Infinity ? endlessElapsedTime : sessionTimeLeft;
     const minutes = Math.floor(timeToFormat / 60);
@@ -119,23 +145,35 @@ function updateSessionTimerDisplay() {
     topSessionTimer.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
+// --- GAMEPLAY MECHANICS ---
+
+/**
+ * Prepares UI and data for the next vocabulary prompt.
+ */
 function nextQuestion() {
+    // Failsafe exit check
     if (sessionTimeLeft <= 0 && sessionTimeLeft !== Infinity) return;
     
     answerSelected = false;
     optionsContainer.innerHTML = '';
     wordTimeLeft = 10;
     
+    // UI Resets
     wordTimerValue.innerText = wordTimeLeft;
     wordTimerValue.classList.remove('warning');
     wordTimerValue.classList.add('hidden'); 
 
+    // Fetch random word pair
     const randomIndex = Math.floor(Math.random() * vocabularyList.length);
     currentWordPair = vocabularyList[randomIndex];
 
     spinWordSlot(currentWordPair.word);
 }
 
+/**
+ * Generates slot machine spin visual before revealing word.
+ * @param {string} finalWord - The actual word to guess
+ */
 function spinWordSlot(finalWord) {
     wordSlot.classList.remove('correct', 'wrong');
     wordSlot.classList.add('spinning');
@@ -145,10 +183,12 @@ function spinWordSlot(finalWord) {
     const targetDuration = 1200; 
 
     function runSpinLoop() {
+        // Render dummy word
         const tempIndex = Math.floor(Math.random() * vocabularyList.length);
         wordText.innerText = vocabularyList[tempIndex].word;
         elapsedTime += currentIntervalDelay;
 
+        // Deceleration logic
         if (elapsedTime > targetDuration * 0.7) {
             currentIntervalDelay += 40;
         } else if (elapsedTime > targetDuration * 0.4) {
@@ -158,9 +198,11 @@ function spinWordSlot(finalWord) {
         if (elapsedTime < targetDuration) {
             setTimeout(runSpinLoop, currentIntervalDelay);
         } else {
+            // Unveil the real target word
             wordSlot.classList.remove('spinning');
             wordText.innerText = finalWord; 
             wordTimerValue.classList.remove('hidden'); 
+            
             generateOptions();
             startWordTimer();
         }
@@ -169,21 +211,28 @@ function spinWordSlot(finalWord) {
     setTimeout(runSpinLoop, currentIntervalDelay);
 }
 
+/**
+ * Populates options board with 1 correct answer and 3 incorrect distractors.
+ */
 function generateOptions() {
     let options = [currentWordPair.translation];
     
+    // Filter out incorrect choices of matching part-of-speech types
     const wrongPool = vocabularyList.filter(item => 
         item.translation !== currentWordPair.translation && 
         item.type === currentWordPair.type
     );
     
+    // Shuffle the wrong pool and pull 3
     wrongPool.sort(() => 0.5 - Math.random());
     for (let i = 0; i < Math.min(3, wrongPool.length); i++) {
         options.push(wrongPool[i].translation);
     }
 
+    // Shuffle the final four choices
     options.sort(() => 0.5 - Math.random());
 
+    // Build DOM Elements
     optionsContainer.innerHTML = '';
     options.forEach(optionText => {
         const btn = document.createElement('button');
@@ -194,6 +243,9 @@ function generateOptions() {
     });
 }
 
+/**
+ * Tracks the 10-second micro-timer for the individual question.
+ */
 function startWordTimer() {
     if (wordInterval) clearInterval(wordInterval);
     
@@ -208,12 +260,18 @@ function startWordTimer() {
             wordTimerValue.innerText = wordTimeLeft;
         }
         
+        // Add visual urgency below 3 seconds
         if (wordTimeLeft <= 3 && wordTimeLeft > 0) {
             wordTimerValue.classList.add('warning');
         }
     }, 1000);
 }
 
+// --- EVALUATION LOGIC ---
+
+/**
+ * Smooth transition utility between rounds
+ */
 function fadeOutAndNext() {
     optionsContainer.classList.add('fade-out-anim');
     questionTimeout = setTimeout(() => {
@@ -222,12 +280,19 @@ function fadeOutAndNext() {
     }, 400);
 }
 
+/**
+ * Evaluates player choice.
+ * @param {HTMLElement} selectedButton - Button pressed
+ * @param {string} chosenText - Text value of button
+ */
 function handleSelection(selectedButton, chosenText) {
     if (answerSelected) return;
     answerSelected = true;
+    
     clearInterval(wordInterval);
     totalCount++;
 
+    // Lock board
     const actionButtons = optionsContainer.querySelectorAll('.option-btn');
     actionButtons.forEach(btn => btn.disabled = true);
 
@@ -238,6 +303,8 @@ function handleSelection(selectedButton, chosenText) {
     } else {
         selectedButton.classList.add('wrong');
         wordSlot.classList.add('wrong');
+        
+        // Auto-reveal the correct answer to the player
         actionButtons.forEach(btn => {
             if (btn.innerText === currentWordPair.translation) {
                 btn.classList.add('correct');
@@ -248,6 +315,9 @@ function handleSelection(selectedButton, chosenText) {
     questionTimeout = setTimeout(fadeOutAndNext, 1100);
 }
 
+/**
+ * Resolves logic when the micro-timer runs out.
+ */
 function handleTimeout() {
     if (answerSelected) return;
     answerSelected = true;
@@ -256,6 +326,8 @@ function handleTimeout() {
     const actionButtons = optionsContainer.querySelectorAll('.option-btn');
     actionButtons.forEach(btn => {
         btn.disabled = true;
+        
+        // Expose correct answer
         if (btn.innerText === currentWordPair.translation) {
             btn.classList.add('correct');
         }
@@ -265,16 +337,21 @@ function handleTimeout() {
     questionTimeout = setTimeout(fadeOutAndNext, 1100);
 }
 
+// --- COMPLETION & UTILITIES ---
+
+/**
+ * Wraps up session and transitions to the stats screen.
+ */
 function endGame() {
-    if (sessionInterval) clearInterval(sessionInterval);
-    if (wordInterval) clearInterval(wordInterval);
-    if (questionTimeout) clearTimeout(questionTimeout);
+    clearAllIntervals();
     
     transitionTo([gameScreen, topSessionTimer], [resultsScreen, mainTitle], () => {
         mainTitle.innerText = "Spiel vorbei!"; 
+        
         const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
         accuracyPercentText.innerText = `${accuracy}%`;
         
+        // Dynamic Accuracy Styling
         accuracyPercentText.className = 'accuracy-number'; 
         if (accuracy >= 90) accuracyPercentText.classList.add('acc-green');
         else if (accuracy >= 75) accuracyPercentText.classList.add('acc-yellow-green');
@@ -288,4 +365,13 @@ function showSetup() {
     transitionTo([resultsScreen], [setupScreen], () => {
         mainTitle.innerText = "Wortschatz"; 
     });
+}
+
+/**
+ * Utility helper to kill all active timers.
+ */
+function clearAllIntervals() {
+    if (sessionInterval) clearInterval(sessionInterval);
+    if (wordInterval) clearInterval(wordInterval);
+    if (questionTimeout) clearTimeout(questionTimeout);
 }
