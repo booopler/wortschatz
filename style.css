@@ -149,8 +149,8 @@ h2 {
 
 /* Low-time warning animations */
 .bg-timer.warning {
-    color: rgba(255, 85, 85, 0.15);
-    text-shadow: 0 0 15px rgba(255, 85, 85, 0.2);
+    color: rgba(142, 67, 67, 0.15);
+    text-shadow: 0 0 15px rgba(142, 67, 67, 0.2);
     animation: shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both infinite;
 }
 
@@ -162,15 +162,15 @@ h2 {
 }
 
 .slot.correct {
-    border-color: #55ff55;
-    box-shadow: 0 0 20px rgba(85, 255, 85, 0.4), inset 0 0 10px rgba(85, 255, 85, 0.2);
-    color: #55ff55;
+    border-color: #b8ffb8;
+    box-shadow: 0 0 20px rgba(184, 255, 184, 0.4), inset 0 0 10px rgba(184, 255, 184, 0.2);
+    color: #b8ffb8;
 }
 
 .slot.wrong {
-    border-color: #ff5555;
-    box-shadow: 0 0 20px rgba(255, 85, 85, 0.4), inset 0 0 10px rgba(255, 85, 85, 0.2);
-    color: #ff5555;
+    border-color: #ffb8b8;
+    box-shadow: 0 0 20px rgba(255, 184, 184, 0.4), inset 0 0 10px rgba(255, 184, 184, 0.2);
+    color: #ffb8b8;
 }
 
 @keyframes shake {
@@ -219,13 +219,13 @@ h2 {
 }
 
 .option-btn.correct {
-    background-color: #1b381b !important;
-    color: #55ff55 !important;
+    background-color: #91ca91 !important;
+    color: #121212 !important;
 }
 
 .option-btn.wrong {
-    background-color: #3d1d1d !important;
-    color: #ff5555 !important;
+    background-color: #cb9090 !important;
+    color: #121212 !important;
 }
 
 /* =========================================
@@ -325,11 +325,11 @@ h2 {
 }
 
 /* Dynamic Accuracy Colors */
-.acc-green { color: #55ff55; text-shadow: 0 0 8px rgba(85, 255, 85, 0.3); }
-.acc-yellow-green { color: #aaff55; text-shadow: 0 0 8px rgba(170, 255, 85, 0.3); }
-.acc-yellow { color: #ffff55; text-shadow: 0 0 8px rgba(255, 255, 85, 0.3); }
-.acc-orange { color: #ffaa55; text-shadow: 0 0 8px rgba(255, 170, 85, 0.3); }
-.acc-red { color: #ff5555; text-shadow: 0 0 8px rgba(255, 85, 85, 0.3); }
+.acc-green { color: #b8ffb8; text-shadow: 0 0 8px rgba(184, 255, 184, 0.3); }
+.acc-yellow-green { color: #dbffb8; text-shadow: 0 0 8px rgba(219, 255, 184, 0.3); }
+.acc-yellow { color: #ffffb8; text-shadow: 0 0 8px rgba(255, 255, 184, 0.3); }
+.acc-orange { color: #ffdbb8; text-shadow: 0 0 8px rgba(255, 219, 184, 0.3); }
+.acc-red { color: #ffb8b8; text-shadow: 0 0 8px rgba(255, 184, 184, 0.3); }
 .acc-default { color: #b9bcae; }
 
 /* =========================================
