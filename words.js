@@ -17,7 +17,7 @@ const vocabularyList = [
     { word: "vermeiden",               translation: "to avoid",                    type: "verb" },
     { word: "die Unterstützung",       translation: "the support",                 type: "noun" },
     { word: "wichtig",                 translation: "important",                   type: "adjective" },
-    { word: "schnell",                 translation: "fast",                        type: "adjective" }
+    { word: "schnell",                 translation: "fast",                        type: "adjective" },
     { word: "die Pflegedokumentation", translation: "the care documentation",      type: "noun" },
     { word: "die Dienstübergabe",      translation: "the shift handover",          type: "noun" },
     { word: "die Patientenverfügung",  translation: "the living will",             type: "noun" },
