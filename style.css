@@ -1,6 +1,3 @@
-/* =========================================
-   1. BASE & TYPOGRAPHY
-   ========================================= */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -30,9 +27,6 @@ h2 {
     color: #b9bcae;
 }
 
-/* =========================================
-   2. MAIN LAYOUT & SCREENS
-   ========================================= */
 .container {
     background: #1e1e1e;
     padding: 40px 30px;
@@ -47,7 +41,6 @@ h2 {
     animation: smoothFade 0.4s ease-out forwards;
 }
 
-/* Utility Class for JS targeting */
 .hidden {
     display: none !important;
 }
@@ -58,9 +51,6 @@ h2 {
     color: #b9bcae;
 }
 
-/* =========================================
-   3. SETUP SCREEN (Difficulty Buttons)
-   ========================================= */
 .setup-controls {
     display: flex;
     justify-content: center;
@@ -78,9 +68,9 @@ h2 {
     border-radius: 16px;
     color: #b9bcae;
     padding: 12px 0;
-    width: 130px; /* Force uniform width */
+    width: 130px;
     cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .diff-btn:hover {
@@ -93,9 +83,22 @@ h2 {
     box-shadow: 0 0 15px rgba(185, 188, 174, 0.5);
 }
 
-/* =========================================
-   4. GAMEPLAY UI & SLOTS
-   ========================================= */
+.diff-btn.easy-btn.active { 
+    background: #b8ffb8; border-color: #b8ffb8; color: #121212; box-shadow: 0 0 15px rgba(184, 255, 184, 0.5); 
+}
+
+.diff-btn.medium-btn.active { 
+    background: #ffffb8; border-color: #ffffb8; color: #121212; box-shadow: 0 0 15px rgba(255, 255, 184, 0.5); 
+}
+
+.diff-btn.hard-btn.active { 
+    background: #ffdbb8; border-color: #ffdbb8; color: #121212; box-shadow: 0 0 15px rgba(255, 219, 184, 0.5); 
+}
+
+.diff-btn.endless-btn.active { 
+    background: #ffb8b8; border-color: #ffb8b8; color: #121212; box-shadow: 0 0 15px rgba(255, 184, 184, 0.5); 
+}
+
 .slots {
     display: flex;
     justify-content: center;
@@ -127,7 +130,6 @@ h2 {
     transition: all 0.3s ease;
 }
 
-/* Background numbers for question timing */
 .bg-timer {
     position: absolute;
     top: 50%;
@@ -135,8 +137,8 @@ h2 {
     transform: translate(-50%, -50%);
     font-size: 100px;
     line-height: 0;
-    margin-top: 7px;
-    color: rgba(185, 188, 174, 0.02);
+    margin-top: 8px;
+    color: rgba(185, 188, 174, 0.04);
     z-index: 0;
     pointer-events: none;
 }
@@ -147,11 +149,10 @@ h2 {
     pointer-events: none;
 }
 
-/* Low-time warning animations */
 .bg-timer.warning {
     color: rgba(142, 67, 67, 0.15);
-    text-shadow: 0 0 15px rgba(142, 67, 67, 0.2);
-    animation: shake 0.3s cubic-bezier(0.36, 0.07, 0.19, 0.97) both infinite;
+    text-shadow: 0 0 25px rgba(142, 67, 67, 0.2);
+    animation: panicPulse 0.25s ease-in-out infinite alternate;
 }
 
 .slot.spinning {
@@ -173,17 +174,11 @@ h2 {
     color: #ffb8b8;
 }
 
-@keyframes shake {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    25% { transform: translate(calc(-50% - 2px), calc(-50% + 2px)) rotate(-2deg); }
-    50% { transform: translate(-50%, -50%) rotate(0deg); }
-    75% { transform: translate(calc(-50% + 2px), calc(-50% - 2px)) rotate(2deg); }
-    100% { transform: translate(-50%, -50%) rotate(0deg); }
+@keyframes panicPulse {
+    0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.5; }
+    100% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
 }
 
-/* =========================================
-   5. INTERACTIVE SELECTION BUTTONS
-   ========================================= */
 .options-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -228,9 +223,6 @@ h2 {
     color: #121212 !important;
 }
 
-/* =========================================
-   6. GAME ACTION BUTTONS 
-   ========================================= */
 .action-btn {
     position: relative;
     z-index: 2;
@@ -250,13 +242,6 @@ h2 {
     transition: color 0.3s ease;
 }
 
-#startButton, #restartButton {
-    color: #121212;
-}
-#startButton:hover, #restartButton:hover {
-    color: #b9bcae;
-}
-
 .action-btn::before {
     content: '';
     position: absolute;
@@ -266,34 +251,24 @@ h2 {
     transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-#startButton::before, #restartButton::before {
-    background-color: #b9bcae;
-}
-
+#startButton, #restartButton { color: #121212; }
+#startButton:hover, #restartButton:hover { color: #b9bcae; }
+#startButton::before, #restartButton::before { background-color: #b9bcae; }
 #startButton:hover::before, #restartButton:hover::before {
     background-color: #222622;
     box-shadow: 0 0 15px rgba(185, 188, 174, 0.4);
     transform: scale(1.05);
 }
 
-.stop-btn {
-    color: #121212;
-}
-.stop-btn::before {
-    background-color: #bcaeae;
-}
-.stop-btn:hover {
-    color: #bcaeae;
-}
+.stop-btn { color: #121212; }
+.stop-btn::before { background-color: #bcaeae; }
+.stop-btn:hover { color: #bcaeae; }
 .stop-btn:hover::before {
     background-color: #262222;
     box-shadow: 0 0 15px rgba(188, 174, 174, 0.4);
     transform: scale(1.05);
 }
 
-/* =========================================
-   7. RESULTS PAGE BOARD & COLORS
-   ========================================= */
 .results-box {
     background: #252525;
     border-radius: 16px;
@@ -324,7 +299,6 @@ h2 {
     letter-spacing: 2px;
 }
 
-/* Dynamic Accuracy Colors */
 .acc-green { color: #b8ffb8 !important; text-shadow: 0 0 8px rgba(184, 255, 184, 0.3); }
 .acc-yellow-green { color: #dbffb8 !important; text-shadow: 0 0 8px rgba(219, 255, 184, 0.3); }
 .acc-yellow { color: #ffffb8 !important; text-shadow: 0 0 8px rgba(255, 255, 184, 0.3); }
@@ -332,26 +306,26 @@ h2 {
 .acc-red { color: #ffb8b8 !important; text-shadow: 0 0 8px rgba(255, 184, 184, 0.3); }
 .acc-default { color: #b9bcae !important; }
 
-/* =========================================
-   8. RESPONSIVE DESIGN & ANIMATION CLASSES
-   ========================================= */
-@media (max-width: 600px) {
-    .options-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
+@media (max-width: 750px) {
+    .options-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+    h1 { font-size: 32px; }
+    .slot { font-size: 28px; height: 110px; }
+}
+
+@media (max-width: 650px) {
+    .options-grid { grid-template-columns: 1fr; gap: 12px; }
     h1 { font-size: 28px; }
     .slot { font-size: 24px; height: 100px; }
 }
 
-/* Forced Override Animations for JS handling */
-.fade-in-anim {
-    animation: smoothFade 0.4s ease-out forwards !important;
+@media (max-width: 440px) {
+    .options-grid { gap: 8px; }
+    h1 { font-size: 24px; }
+    .slot { font-size: 20px; height: 85px; }
 }
 
-.fade-out-anim {
-    animation: smoothFadeOut 0.4s ease-out forwards !important;
-}
+.fade-in-anim { animation: smoothFade 0.4s ease-out forwards !important; }
+.fade-out-anim { animation: smoothFadeOut 0.4s ease-out forwards !important; }
 
 @keyframes smoothFade {
     from { opacity: 0; transform: translateY(10px); }

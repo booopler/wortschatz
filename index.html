@@ -4,31 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wortschatz</title>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        
         <h1 id="mainTitle">Wortschatz</h1>
         <h1 id="topSessionTimer" class="hidden">00:00</h1>
 
         <div id="setupScreen" class="screen">
             <div class="setup-controls">
-                <button class="diff-btn" data-val="150">Easy</button>
-                <button class="diff-btn active" data-val="300">Medium</button>
-                <button class="diff-btn" data-val="600">Hard</button>
-                <button class="diff-btn" data-val="infinite">Endless</button>
+                <button class="diff-btn easy-btn" data-val="150">Easy</button>
+                <button class="diff-btn medium-btn active" data-val="300">Medium</button>
+                <button class="diff-btn hard-btn" data-val="600">Hard</button>
+                <button class="diff-btn endless-btn" data-val="infinite">Endless</button>
             </div>
             <button id="startButton" class="action-btn">START</button>
         </div>
 
         <div id="gameScreen" class="screen hidden">
-            
             <div class="slots">
                 <div class="slot-container">
                     <div id="wordSlot" class="slot">
@@ -37,9 +33,7 @@
                     </div>
                 </div>
             </div>
-
             <div id="optionsContainer" class="options-grid"></div>
-            
             <div>
                 <button id="stopButton" class="action-btn stop-btn">STOP</button>
             </div>
@@ -54,7 +48,6 @@
             </div>
             <button id="restartButton" class="action-btn">DONE</button>
         </div>
-        
     </div>
     
     <script src="words.js"></script>
