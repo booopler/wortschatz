@@ -11,8 +11,15 @@
 </head>
 <body>
     <div class="container">
+        
         <h1 id="mainTitle">Wortschatz</h1>
-        <h1 id="topSessionTimer" class="hidden">00:00</h1>
+        
+        <div id="headerContainer" class="header-container hidden">
+            <h1 id="topSessionTimer">00:00</h1>
+            <div id="streakMeterWrapper" class="streak-wrapper">
+                <div id="streakMeter" class="streak-pill">x1</div>
+            </div>
+        </div>
 
         <div id="setupScreen" class="screen">
             <div class="setup-controls">
@@ -33,7 +40,9 @@
                     </div>
                 </div>
             </div>
+            
             <div id="optionsContainer" class="options-grid"></div>
+            
             <div>
                 <button id="stopButton" class="action-btn stop-btn">STOP</button>
             </div>
@@ -41,11 +50,33 @@
 
         <div id="resultsScreen" class="screen hidden">
             <div class="results-box">
-                <div class="accuracy-display">
-                    <div id="accuracyPercent" class="accuracy-number acc-default">0%</div>
-                    <div class="accuracy-label">Accuracy</div>
+                <div class="accuracy-score-container">
+                    <div class="accuracy-display">
+                        <div id="accuracyPercent" class="accuracy-number acc-default">0%</div>
+                        <div class="accuracy-label">Accuracy</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="score-display">
+                        <div id="finalScore" class="score-number acc-default">0</div>
+                        <div class="accuracy-label">Score</div>
+                    </div>
                 </div>
             </div>
+            
+            <div class="collapsible-wrapper" id="resultsCollapsible">
+                <button id="accordionToggle" class="accordion-header">
+                    <span>More Results</span>
+                    <span class="chevron">▼</span>
+                </button>
+                <div id="accordionContent" class="accordion-content">
+                    <div class="stats-list">
+                        <div>Hits: <span id="statHits">0</span></div>
+                        <div>Streaks: <span id="statStreaks">0</span></div>
+                        <div>Total: <span id="statTotal">0</span></div>
+                    </div>
+                </div>
+            </div>
+
             <button id="restartButton" class="action-btn">DONE</button>
         </div>
     </div>
