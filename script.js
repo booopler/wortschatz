@@ -1,27 +1,30 @@
+const GAS_API_URL = "https://script.google.com/macros/s/AKfycbxwwszGlaXfRK-0Z2GFmeJu4aPbzAgcetOpvy95MnZdH3M9lM_fX_WXh_PwIovCY7gS/exec";
+
+const submitScoreBtn = document.getElementById('submitScoreBtn');
+const nameModal = document.getElementById('nameModal');
+const playerNameInput = document.getElementById('playerName');
+const saveScoreBtn = document.getElementById('saveScoreBtn');
+const closeModalBtn = document.getElementById('closeModalBtn');
+const leaderboardList = document.getElementById('leaderboardList');
 const mainTitle = document.getElementById('mainTitle');
 const headerContainer = document.getElementById('headerContainer');
 const topSessionTimer = document.getElementById('topSessionTimer');
 const streakMeter = document.getElementById('streakMeter');
-
 const setupScreen = document.getElementById('setupScreen');
 const gameScreen = document.getElementById('gameScreen');
 const resultsScreen = document.getElementById('resultsScreen');
-
 const diffBtns = document.querySelectorAll('.diff-btn');
 const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
 const restartButton = document.getElementById('restartButton');
-
 const wordSlot = document.getElementById('wordSlot');
 const optionsContainer = document.getElementById('optionsContainer');
 const wordTimerValue = document.getElementById('wordTimerValue');
 const wordText = document.getElementById('wordText');
-
 const accuracyPercentText = document.getElementById('accuracyPercent');
 const finalScoreText = document.getElementById('finalScore');
 const accordionToggle = document.getElementById('accordionToggle');
 const resultsCollapsible = document.getElementById('resultsCollapsible');
-
 const statHits = document.getElementById('statHits');
 const statStreaks = document.getElementById('statStreaks');
 const statTotal = document.getElementById('statTotal');
@@ -33,23 +36,59 @@ let wordInterval = null;
 let questionTimeout = null;
 let availableWords = [];
 let currentWordPair = null;
-
 let correctCount = 0;
 let totalCount = 0;
 let currentStreak = 0; 
 let maxStreak = 0;     
 let totalScore = 0;
-
 let answerSelected = false;
 let selectedDuration = "300";
 let endlessElapsedTime = 0;
 
 startButton.addEventListener('click', startGame);
+
 stopButton.addEventListener('click', stopGame);
+
 restartButton.addEventListener('click', showSetup);
 
 accordionToggle.addEventListener('click', () => {
     resultsCollapsible.classList.toggle('active');
+});
+
+if (submitScoreBtn) {
+    submitScoreBtn.addEventListener('click', () => {
+        nameModal.classList.add('show');
+        playerNameInput.value = ""; 
+        playerNameInput.focus();
+    });
+}
+
+closeModalBtn.addEventListener('click', () => {
+    nameModal.classList.remove('show');
+});
+
+playerNameInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value
+        .toUpperCase()
+        .replace(/[^A-Z]/g, '')
+        .slice(0, 3);
+});
+
+saveScoreBtn.addEventListener('click', () => {
+    const name = playerNameInput.value;
+    
+    if (name.length === 3) {
+        saveScoreToSheet(name, totalScore);
+        nameModal.classList.remove('show'); 
+        
+        if (submitScoreBtn) {
+            submitScoreBtn.disabled = true;
+            submitScoreBtn.innerText = "SAVED!";
+            submitScoreBtn.style.opacity = "0.5";
+        }
+    } else {
+        alert("Bitte genau 3 Buchstaben eingeben.");
+    }
 });
 
 diffBtns.forEach((btn) => {
@@ -57,6 +96,7 @@ diffBtns.forEach((btn) => {
         diffBtns.forEach((b) => {
             b.classList.remove('active');
         });
+        
         event.target.classList.add('active');
         selectedDuration = event.target.getAttribute('data-val');
     });
@@ -132,6 +172,7 @@ function startGame() {
 
 function stopGame() {
     clearAllIntervals();
+    
     transitionTo([gameScreen, headerContainer], [setupScreen, mainTitle], () => {
         mainTitle.innerText = "Wortschatz";
     });
@@ -154,18 +195,16 @@ function updateSessionTimerDisplay() {
 
     if (sessionTimeLeft === Infinity) {
         topSessionTimer.classList.add('acc-default');
+    } else if (sessionTimeLeft >= 30) {
+        topSessionTimer.classList.add('acc-default');
+    } else if (sessionTimeLeft > 23) {
+        topSessionTimer.classList.add('acc-yellow-green');
+    } else if (sessionTimeLeft > 16) {
+        topSessionTimer.classList.add('acc-yellow');
+    } else if (sessionTimeLeft > 9) {
+        topSessionTimer.classList.add('acc-orange');
     } else {
-        if (sessionTimeLeft >= 30) {
-            topSessionTimer.classList.add('acc-default');
-        } else if (sessionTimeLeft > 23) {
-            topSessionTimer.classList.add('acc-yellow-green');
-        } else if (sessionTimeLeft > 16) {
-            topSessionTimer.classList.add('acc-yellow');
-        } else if (sessionTimeLeft > 9) {
-            topSessionTimer.classList.add('acc-orange');
-        } else {
-            topSessionTimer.classList.add('acc-red');
-        }
+        topSessionTimer.classList.add('acc-red');
     }
 }
 
@@ -301,9 +340,11 @@ function generateOptions() {
         const button = document.createElement('button');
         button.className = 'option-btn';
         button.innerText = optionText;
+        
         button.addEventListener('click', () => {
             handleSelection(button, optionText);
         });
+        
         optionsContainer.appendChild(button);
     });
 }
@@ -335,6 +376,7 @@ function startWordTimer() {
 
 function fadeOutAndNext() {
     optionsContainer.classList.add('fade-out-anim');
+    
     questionTimeout = setTimeout(() => {
         optionsContainer.classList.remove('fade-out-anim');
         nextQuestion();
@@ -351,6 +393,7 @@ function handleSelection(selectedButton, chosenText) {
     totalCount++;
 
     const actionButtons = optionsContainer.querySelectorAll('.option-btn');
+    
     actionButtons.forEach((btn) => {
         btn.disabled = true;
     });
@@ -395,8 +438,10 @@ function handleTimeout() {
     updateStreakMeter(false);
 
     const actionButtons = optionsContainer.querySelectorAll('.option-btn');
+    
     actionButtons.forEach((btn) => {
         btn.disabled = true;
+        
         if (btn.innerText === currentWordPair.translation) {
             btn.classList.add('correct');
         }
@@ -412,7 +457,16 @@ function endGame() {
     transitionTo([gameScreen, headerContainer], [resultsScreen, mainTitle], () => {
         mainTitle.innerText = "Spiel vorbei!"; 
         
+        if (submitScoreBtn) {
+            submitScoreBtn.disabled = false;
+            submitScoreBtn.innerText = "SUBMIT";
+            submitScoreBtn.style.opacity = "1";
+        }
+
+        loadLeaderboard();
+        
         let accuracy;
+        
         if (totalCount > 0) {
             accuracy = Math.round((correctCount / totalCount) * 100);
         } else {
@@ -421,11 +475,9 @@ function endGame() {
         
         accuracyPercentText.innerText = `${accuracy}%`;
         finalScoreText.innerText = totalScore;
-        
         statHits.innerText = correctCount;
         statStreaks.innerText = maxStreak;
         statTotal.innerText = totalCount;
-
         accuracyPercentText.className = 'accuracy-number'; 
         finalScoreText.className = 'score-number acc-default';
         
@@ -459,4 +511,87 @@ function clearAllIntervals() {
     if (questionTimeout) {
         clearTimeout(questionTimeout);
     }
+}
+
+function loadLeaderboard() {
+    leaderboardList.innerHTML = "<div class='lb-loading'>Loading</div>";
+    
+    fetch(GAS_API_URL)
+        .then((response) => {
+            return response.json();
+        })
+        .then((data) => {
+            leaderboardList.innerHTML = '';
+            
+            const topData = data.slice(0, 8);
+            
+            if (topData.length === 0) {
+                leaderboardList.innerHTML = "<div class='lb-entry' style='font-size: 15px;'>No scores yet.</div>";
+                return;
+            }
+
+            topData.forEach((row) => {
+                const div = document.createElement('div');
+                div.className = 'lb-entry';
+                let scoreClass = '';
+                const entryMode = String(row.mode || '').toLowerCase();
+                
+                if (entryMode === '150' || entryMode === 'easy') {
+                    scoreClass = 'lb-score-easy';
+                } else if (entryMode === '300' || entryMode === 'medium') {
+                    scoreClass = 'lb-score-medium';
+                } else if (entryMode === '600' || entryMode === 'hard') {
+                    scoreClass = 'lb-score-hard';
+                } else if (entryMode === 'infinite' || entryMode === 'endless') {
+                    scoreClass = 'lb-score-endless';
+                }
+                
+                div.innerHTML = `<span class="${scoreClass}">${row.name}</span><span>${row.score}</span>`;
+                leaderboardList.appendChild(div);
+            });
+        })
+        .catch((error) => {
+            console.error('Error fetching leaderboard:', error);
+            leaderboardList.innerHTML = "<div class='lb-entry' style='font-size: 15px; color: #ffb8b8;'>Network error</div>";
+        });
+}
+
+function saveScoreToSheet(name, score) {
+    leaderboardList.innerHTML = "<div class='lb-loading'>Saving</div>";
+    
+    fetch(GAS_API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'name': name,
+            'score': score,
+            'mode': selectedDuration
+        })
+    })
+    .then((response) => {
+        return response.text();
+    })
+    .then((result) => {
+        if (submitScoreBtn) {
+            if (result === "Not higher") {
+                submitScoreBtn.innerText = "NOT A HIGH SCORE.";
+            } else {
+                submitScoreBtn.innerText = "SAVED!";
+            }
+        }
+        
+        setTimeout(loadLeaderboard, 1000);
+    })
+    .catch((error) => {
+        console.error('Error saving score:', error);
+        leaderboardList.innerHTML = "<div class='lb-entry' style='font-size: 15px; color: #ffb8b8;'>Failed to save</div>";
+        
+        if (submitScoreBtn) {
+            submitScoreBtn.disabled = false;
+            submitScoreBtn.innerText = "SUBMIT";
+            submitScoreBtn.style.opacity = "1";
+        }
+    });
 }

@@ -11,7 +11,6 @@
 </head>
 <body>
     <div class="container">
-        
         <h1 id="mainTitle">Wortschatz</h1>
         
         <div id="headerContainer" class="header-container hidden">
@@ -26,7 +25,7 @@
                 <button class="diff-btn easy-btn" data-val="150">Easy</button>
                 <button class="diff-btn medium-btn active" data-val="300">Medium</button>
                 <button class="diff-btn hard-btn" data-val="600">Hard</button>
-                <button class="diff-btn endless-btn" data-val="infinite">Endless</button>
+                <button class="diff-btn endless-btn" data-val="infinite">???</button>
             </div>
             <button id="startButton" class="action-btn">START</button>
         </div>
@@ -70,14 +69,29 @@
                 </button>
                 <div id="accordionContent" class="accordion-content">
                     <div class="stats-list">
-                        <div>Hits: <span id="statHits">0</span></div>
-                        <div>Streaks: <span id="statStreaks">0</span></div>
-                        <div>Total: <span id="statTotal">0</span></div>
+                        <div>Correctly Guessed: <span id="statHits">0</span></div>
+                        <div>Highest Streak: <span id="statStreaks">0</span></div>
+                        <div>Total Guessed: <span id="statTotal">0</span></div>
                     </div>
                 </div>
             </div>
 
+            <div id="leaderboardArea" class="leaderboard-container">
+                <h3 class="leaderboard-title">LEADERBOARDS</h3>
+                <div id="leaderboardList" class="leaderboard-list">Loading...</div>
+                <button id="submitScoreBtn" class="stretched-action-btn action-submit">SUBMIT</button>
+            </div>
+
             <button id="restartButton" class="action-btn">DONE</button>
+        </div>
+    </div>
+
+    <div id="nameModal" class="modal">
+        <div class="modal-content">
+            <h2>Enter Name</h2>
+            <input type="text" id="playerName" maxlength="3" autocomplete="off" placeholder="AAA">
+            <button id="saveScoreBtn" class="stretched-action-btn action-save">SAVE</button>
+            <button id="closeModalBtn" class="stretched-action-btn action-cancel">CANCEL</button>
         </div>
     </div>
     
