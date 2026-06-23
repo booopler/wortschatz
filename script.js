@@ -69,9 +69,16 @@ accordionToggle.addEventListener('click', () => {
 
 if (submitScoreBtn) {
     submitScoreBtn.addEventListener('click', () => {
-        nameModal.classList.add('show');
-        playerNameInput.value = ""; 
-        playerNameInput.focus();
+        if (submitScoreBtn.innerText === "RETRY") {
+            leaderboardList.innerHTML = "<div class='lb-loading'>Loading</div>";
+            submitScoreBtn.innerText = "SUBMIT";
+            loadLeaderboard();
+        } 
+        else if (submitScoreBtn.innerText === "SUBMIT") {
+            nameModal.classList.add('show');
+            playerNameInput.value = ""; 
+            playerNameInput.focus();
+        }
     });
 }
 
@@ -656,11 +663,23 @@ function loadLeaderboard() {
         .catch((error) => {
             console.error('Error fetching leaderboard:', error);
             leaderboardList.innerHTML = "<div class='lb-entry' style='font-size: 15px; color: #ffb8b8;'>Network error.</div>";
+            
+            if (submitScoreBtn) {
+                submitScoreBtn.innerText = "RETRY";
+                submitScoreBtn.disabled = false;
+                submitScoreBtn.style.opacity = "1";
+            }
         });
 }
 
 function saveScoreToSheet(name, score) {
     leaderboardList.innerHTML = "<div class='lb-loading'>Saving</div>";
+    
+    if (submitScoreBtn) {
+        submitScoreBtn.disabled = true;
+        submitScoreBtn.innerText = "PLEASE WAIT...";
+        submitScoreBtn.style.opacity = "0.5";
+    }
     
     fetch(GAS_API_URL, {
         method: 'POST',
@@ -683,17 +702,20 @@ function saveScoreToSheet(name, score) {
             } else {
                 submitScoreBtn.innerText = "SAVED!";
             }
+            
+            submitScoreBtn.disabled = true;
+            submitScoreBtn.style.opacity = "0.5";
         }
         setTimeout(loadLeaderboard, 1000);
     })
     .catch((error) => {
         console.error('Error saving score:', error);
-        leaderboardList.innerHTML = "<div class='lb-entry' style='font-size: 15px; color: #ffb8b8;'>Failed to save</div>";
+        leaderboardList.innerHTML = "<div class='lb-entry' style='font-size: 15px; color: #ffb8b8;'>Failed to save.</div>";
         
         if (submitScoreBtn) {
-            submitScoreBtn.disabled = false;
-            submitScoreBtn.innerText = "SUBMIT";
-            submitScoreBtn.style.opacity = "1";
+            submitScoreBtn.disabled = true;
+            submitScoreBtn.innerText = "ERROR!";
+            submitScoreBtn.style.opacity = "0.5";
         }
     });
 }

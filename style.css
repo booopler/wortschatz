@@ -72,6 +72,7 @@ h2 {
     max-width: 450px;
     margin: 0 auto 0px auto;
     background: #1e1e1e;
+    overflow: visible;
 }
 
 .glyph-segments-container {
@@ -107,10 +108,22 @@ h2 {
 
 .glyph-segment.health-low {
     background-color: #ffb8b8;
+    animation: healthPulse 0.4s ease-in-out infinite alternate;
 }
 
 .damage-anim {
     animation: glyphHardwareShake 0.2s ease-in-out 2;
+}
+
+@keyframes healthPulse {
+    0% {
+        box-shadow: 0 0 4px rgba(255, 184, 184, 0.4);
+        background-color: #ffb8b8;
+    }
+    100% {
+        box-shadow: 0 0 8px rgba(255, 184, 184, 0.8);
+        background-color: #ffb8b8;
+    }
 }
 
 #topSessionTimer {
@@ -129,7 +142,6 @@ h2 {
     width: 0px;
     opacity: 0;
     pointer-events: none;
-    overflow: hidden;
     transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
 }
 
@@ -137,6 +149,7 @@ h2 {
     width: 75px;
     opacity: 1;
     pointer-events: auto;
+    overflow: visible; 
 }
 
 .streak-pill {
@@ -420,6 +433,7 @@ h2 {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
     animation: smoothFade 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
