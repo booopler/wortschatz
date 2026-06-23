@@ -16,7 +16,9 @@ const resultsScreen = document.getElementById('resultsScreen');
 const diffBtns = document.querySelectorAll('.diff-btn');
 const startButton = document.getElementById('startButton');
 const stopButton = document.getElementById('stopButton');
+const finishButton = document.getElementById('finishButton');
 const restartButton = document.getElementById('restartButton');
+const replayButton = document.getElementById('replayButton');
 const wordSlot = document.getElementById('wordSlot');
 const optionsContainer = document.getElementById('optionsContainer');
 const wordTimerValue = document.getElementById('wordTimerValue');
@@ -25,9 +27,13 @@ const accuracyPercentText = document.getElementById('accuracyPercent');
 const finalScoreText = document.getElementById('finalScore');
 const accordionToggle = document.getElementById('accordionToggle');
 const resultsCollapsible = document.getElementById('resultsCollapsible');
-const statHits = document.getElementById('statHits');
 const statStreaks = document.getElementById('statStreaks');
 const statTotal = document.getElementById('statTotal');
+const healthBarWrapper = document.getElementById('healthBarWrapper');
+const glyphSegmentsContainer = document.getElementById('glyphSegmentsContainer');
+const statTimeElapsed = document.getElementById('statTimeElapsed');
+const statFastest = document.getElementById('statFastest');
+const statSlowest = document.getElementById('statSlowest');
 
 let sessionTimeLeft = 0;
 let wordTimeLeft = 10;
@@ -44,12 +50,18 @@ let totalScore = 0;
 let answerSelected = false;
 let selectedDuration = "300";
 let endlessElapsedTime = 0;
+let maxLives = 0;
+let currentLives = 0;
+let sessionStartTime = 0;   
+let questionStartTime = 0;  
+let fastestGuess = Infinity;
+let slowestGuess = 0;       
 
 startButton.addEventListener('click', startGame);
-
 stopButton.addEventListener('click', stopGame);
-
+finishButton.addEventListener('click', endGame);
 restartButton.addEventListener('click', showSetup);
+replayButton.addEventListener('click', startGame);
 
 accordionToggle.addEventListener('click', () => {
     resultsCollapsible.classList.toggle('active');
@@ -87,7 +99,7 @@ saveScoreBtn.addEventListener('click', () => {
             submitScoreBtn.style.opacity = "0.5";
         }
     } else {
-        alert("Bitte genau 3 Buchstaben eingeben.");
+        alert("Maximum of 3 letters are required.");
     }
 });
 
@@ -96,7 +108,6 @@ diffBtns.forEach((btn) => {
         diffBtns.forEach((b) => {
             b.classList.remove('active');
         });
-        
         event.target.classList.add('active');
         selectedDuration = event.target.getAttribute('data-val');
     });
@@ -141,15 +152,36 @@ function startGame() {
         endlessElapsedTime = 0; 
         availableWords = [...vocabularyList];
         
+        sessionStartTime = performance.now();
+        fastestGuess = Infinity;
+        slowestGuess = 0;
+
         resultsCollapsible.classList.remove('active');
         updateStreakMeter(false);
+
+        healthBarWrapper.classList.remove('damage-anim'); 
+        void healthBarWrapper.offsetWidth;
         
         if (selectedDuration === "infinite") {
             sessionTimeLeft = Infinity;
+            maxLives = Infinity;
+            finishButton.classList.remove('hidden'); 
+            healthBarWrapper.classList.add('hidden'); 
         } else {
             sessionTimeLeft = parseInt(selectedDuration, 10);
+            if (selectedDuration === "150") {
+                maxLives = 7;
+            } else if (selectedDuration === "300") {
+                maxLives = 5;
+            } else if (selectedDuration === "600") {
+                maxLives = 3;
+            }
+            finishButton.classList.add('hidden'); 
+            healthBarWrapper.classList.remove('hidden'); 
         }
 
+        currentLives = maxLives;
+        updateLivesUI(false);
         updateSessionTimerDisplay();
         
         sessionInterval = setInterval(() => {
@@ -172,19 +204,15 @@ function startGame() {
 
 function stopGame() {
     clearAllIntervals();
-    
     transitionTo([gameScreen, headerContainer], [setupScreen, mainTitle], () => {
         mainTitle.innerText = "Wortschatz";
     });
 }
 
 function updateSessionTimerDisplay() {
-    let timeToFormat;
-    
+    let timeToFormat = sessionTimeLeft;
     if (sessionTimeLeft === Infinity) {
         timeToFormat = endlessElapsedTime;
-    } else {
-        timeToFormat = sessionTimeLeft;
     }
 
     const minutes = Math.floor(timeToFormat / 60);
@@ -193,9 +221,7 @@ function updateSessionTimerDisplay() {
     topSessionTimer.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     topSessionTimer.className = '';
 
-    if (sessionTimeLeft === Infinity) {
-        topSessionTimer.classList.add('acc-default');
-    } else if (sessionTimeLeft >= 30) {
+    if (sessionTimeLeft === Infinity || sessionTimeLeft >= 30) {
         topSessionTimer.classList.add('acc-default');
     } else if (sessionTimeLeft > 23) {
         topSessionTimer.classList.add('acc-yellow-green');
@@ -211,18 +237,15 @@ function updateSessionTimerDisplay() {
 function updateStreakMeter(isCorrect) {
     if (currentStreak > 0) {
         headerContainer.classList.add('has-streak');
-        let displayStreak;
-        
+        let displayStreak = currentStreak;
         if (currentStreak > 10) {
             displayStreak = 10;
-        } else {
-            displayStreak = currentStreak;
         }
         
         streakMeter.innerText = `x${displayStreak}`;
         streakMeter.className = 'streak-pill';
         
-        void streakMeter.offsetWidth;
+        void streakMeter.offsetWidth; 
 
         if (currentStreak <= 5) {
             streakMeter.classList.add('streak-color-low');
@@ -257,11 +280,55 @@ function updateStreakMeter(isCorrect) {
     }
 }
 
+function updateLivesUI(isWrong) {
+    if (currentLives === Infinity) {
+        return;
+    }
+
+    const TOTAL_GLYPHS = 7; 
+
+    if (glyphSegmentsContainer.children.length !== TOTAL_GLYPHS) {
+        glyphSegmentsContainer.innerHTML = '';
+        for (let i = 0; i < TOTAL_GLYPHS; i++) {
+            const segment = document.createElement('div');
+            segment.className = 'glyph-segment';
+            glyphSegmentsContainer.appendChild(segment);
+        }
+    }
+
+    let colorClass = 'health-high';
+    if (currentLives >= 5) {
+        colorClass = 'health-high'; 
+    } else if (currentLives === 4) {
+        colorClass = 'health-good'; 
+    } else if (currentLives === 3) {
+        colorClass = 'health-med';  
+    } else if (currentLives === 2) {
+        colorClass = 'health-warn'; 
+    } else if (currentLives <= 1) {
+        colorClass = 'health-low';  
+    }
+
+    const segments = glyphSegmentsContainer.children;
+    for (let i = 0; i < segments.length; i++) {
+        segments[i].classList.remove('health-high', 'health-good', 'health-med', 'health-warn', 'health-low');
+        
+        if (i < currentLives) {
+            segments[i].classList.add(colorClass);
+        }
+    }
+
+    if (isWrong) {
+        healthBarWrapper.classList.remove('damage-anim');
+        void healthBarWrapper.offsetWidth; 
+        healthBarWrapper.classList.add('damage-anim');
+    }
+}
+
 function nextQuestion() {
     if (sessionTimeLeft <= 0 && sessionTimeLeft !== Infinity) {
         return;
     }
-    
     if (availableWords.length === 0) {
         endGame();
         return;
@@ -283,8 +350,7 @@ function nextQuestion() {
 }
 
 function spinWordSlot(finalWord) {
-    wordSlot.classList.remove('correct');
-    wordSlot.classList.remove('wrong');
+    wordSlot.classList.remove('correct', 'wrong');
     wordSlot.classList.add('spinning');
     
     let currentIntervalDelay = 40;
@@ -309,6 +375,7 @@ function spinWordSlot(finalWord) {
             wordText.innerText = finalWord; 
             generateOptions();
             startWordTimer();
+            questionStartTime = performance.now();
         }
     }
     
@@ -333,7 +400,6 @@ function generateOptions() {
     options.sort(() => {
         return 0.5 - Math.random();
     });
-    
     optionsContainer.innerHTML = '';
     
     options.forEach((optionText) => {
@@ -344,7 +410,6 @@ function generateOptions() {
         button.addEventListener('click', () => {
             handleSelection(button, optionText);
         });
-        
         optionsContainer.appendChild(button);
     });
 }
@@ -376,7 +441,6 @@ function startWordTimer() {
 
 function fadeOutAndNext() {
     optionsContainer.classList.add('fade-out-anim');
-    
     questionTimeout = setTimeout(() => {
         optionsContainer.classList.remove('fade-out-anim');
         nextQuestion();
@@ -387,11 +451,11 @@ function handleSelection(selectedButton, chosenText) {
     if (answerSelected) {
         return;
     }
-    
     answerSelected = true;
     clearInterval(wordInterval);
     totalCount++;
 
+    const guessDuration = performance.now() - questionStartTime;
     const actionButtons = optionsContainer.querySelectorAll('.option-btn');
     
     actionButtons.forEach((btn) => {
@@ -402,14 +466,22 @@ function handleSelection(selectedButton, chosenText) {
         correctCount++;
         currentStreak++; 
         totalScore += currentStreak;
-
         if (currentStreak > maxStreak) {
             maxStreak = currentStreak; 
+        }
+
+        if (guessDuration < fastestGuess) {
+            fastestGuess = guessDuration;
+        }
+        if (guessDuration > slowestGuess) {
+            slowestGuess = guessDuration;
         }
 
         updateStreakMeter(true);
         selectedButton.classList.add('correct');
         wordSlot.classList.add('correct');
+        
+        questionTimeout = setTimeout(fadeOutAndNext, 1100);
     } else {
         currentStreak = 0; 
         updateStreakMeter(false);
@@ -421,9 +493,16 @@ function handleSelection(selectedButton, chosenText) {
                 btn.classList.add('correct');
             }
         });
-    }
 
-    questionTimeout = setTimeout(fadeOutAndNext, 1100);
+        currentLives--;
+        updateLivesUI(true);
+
+        if (currentLives <= 0) {
+            questionTimeout = setTimeout(endGame, 1100);
+        } else {
+            questionTimeout = setTimeout(fadeOutAndNext, 1100);
+        }
+    }
 }
 
 function handleTimeout() {
@@ -434,25 +513,35 @@ function handleTimeout() {
     answerSelected = true;
     totalCount++;
     currentStreak = 0; 
-    
     updateStreakMeter(false);
 
     const actionButtons = optionsContainer.querySelectorAll('.option-btn');
-    
     actionButtons.forEach((btn) => {
         btn.disabled = true;
-        
         if (btn.innerText === currentWordPair.translation) {
             btn.classList.add('correct');
         }
     });
 
     wordSlot.classList.add('wrong');
-    questionTimeout = setTimeout(fadeOutAndNext, 1100);
+    currentLives--;
+    updateLivesUI(true);
+
+    if (currentLives <= 0) {
+        questionTimeout = setTimeout(endGame, 1100);
+    } else {
+        questionTimeout = setTimeout(fadeOutAndNext, 1100);
+    }
 }
 
 function endGame() {
     clearAllIntervals();
+    
+    const totalElapsedMs = performance.now() - sessionStartTime;
+    const totalElapsedSec = Math.floor(totalElapsedMs / 1000);
+    const elapsedMinutes = Math.floor(totalElapsedSec / 60);
+    const elapsedSeconds = totalElapsedSec % 60;
+    const formattedElapsedTime = `${elapsedMinutes.toString().padStart(2, '0')}:${elapsedSeconds.toString().padStart(2, '0')}`;
     
     transitionTo([gameScreen, headerContainer], [resultsScreen, mainTitle], () => {
         mainTitle.innerText = "Spiel vorbei!"; 
@@ -465,19 +554,34 @@ function endGame() {
 
         loadLeaderboard();
         
-        let accuracy;
-        
+        let accuracy = 0;
         if (totalCount > 0) {
             accuracy = Math.round((correctCount / totalCount) * 100);
-        } else {
-            accuracy = 0;
         }
         
         accuracyPercentText.innerText = `${accuracy}%`;
         finalScoreText.innerText = totalScore;
-        statHits.innerText = correctCount;
         statStreaks.innerText = maxStreak;
         statTotal.innerText = totalCount;
+        
+        if (statTimeElapsed) {
+            statTimeElapsed.innerText = formattedElapsedTime;
+        }
+        if (statFastest) {
+            if (fastestGuess === Infinity) {
+                statFastest.innerText = "?";
+            } else {
+                statFastest.innerText = `${(fastestGuess / 1000).toFixed(2)}s`;
+            }
+        }
+        if (statSlowest) {
+            if (slowestGuess === 0) {
+                statSlowest.innerText = "?";
+            } else {
+                statSlowest.innerText = `${(slowestGuess / 1000).toFixed(2)}s`;
+            }
+        }
+
         accuracyPercentText.className = 'accuracy-number'; 
         finalScoreText.className = 'score-number acc-default';
         
@@ -522,7 +626,6 @@ function loadLeaderboard() {
         })
         .then((data) => {
             leaderboardList.innerHTML = '';
-            
             const topData = data.slice(0, 8);
             
             if (topData.length === 0) {
@@ -552,7 +655,7 @@ function loadLeaderboard() {
         })
         .catch((error) => {
             console.error('Error fetching leaderboard:', error);
-            leaderboardList.innerHTML = "<div class='lb-entry' style='font-size: 15px; color: #ffb8b8;'>Network error</div>";
+            leaderboardList.innerHTML = "<div class='lb-entry' style='font-size: 15px; color: #ffb8b8;'>Network error.</div>";
         });
 }
 
@@ -561,8 +664,8 @@ function saveScoreToSheet(name, score) {
     
     fetch(GAS_API_URL, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+        headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded' 
         },
         body: new URLSearchParams({
             'name': name,
@@ -581,7 +684,6 @@ function saveScoreToSheet(name, score) {
                 submitScoreBtn.innerText = "SAVED!";
             }
         }
-        
         setTimeout(loadLeaderboard, 1000);
     })
     .catch((error) => {

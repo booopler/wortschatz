@@ -14,9 +14,12 @@
         <h1 id="mainTitle">Wortschatz</h1>
         
         <div id="headerContainer" class="header-container hidden">
-            <h1 id="topSessionTimer">00:00</h1>
-            <div id="streakMeterWrapper" class="streak-wrapper">
-                <div id="streakMeter" class="streak-pill">x1</div>
+            <div class="timer-streak-row">
+                <h1 id="topSessionTimer">00:00</h1>
+                
+                <div id="streakMeterWrapper" class="streak-wrapper">
+                    <div id="streakMeter" class="streak-pill">x1</div>
+                </div>
             </div>
         </div>
 
@@ -31,6 +34,10 @@
         </div>
 
         <div id="gameScreen" class="screen hidden">
+            <div id="healthBarWrapper" class="health-bar-wrapper">
+                <div id="glyphSegmentsContainer" class="glyph-segments-container"></div>
+            </div>
+
             <div class="slots">
                 <div class="slot-container">
                     <div id="wordSlot" class="slot">
@@ -42,8 +49,9 @@
             
             <div id="optionsContainer" class="options-grid"></div>
             
-            <div>
+            <div class="action-row">
                 <button id="stopButton" class="action-btn stop-btn">STOP</button>
+                <button id="finishButton" class="action-btn side-btn check-btn">✓</button>
             </div>
         </div>
 
@@ -69,8 +77,10 @@
                 </button>
                 <div id="accordionContent" class="accordion-content">
                     <div class="stats-list">
-                        <div>Correctly Guessed: <span id="statHits">0</span></div>
+                        <div>Time Elapsed: <span id="statTimeElapsed">0.00s</span></div>
                         <div>Highest Streak: <span id="statStreaks">0</span></div>
+                        <div>Fastest Guessed: <span id="statFastest">?</span></div>
+                        <div>Slowest Guessed: <span id="statSlowest">?</span></div>
                         <div>Total Guessed: <span id="statTotal">0</span></div>
                     </div>
                 </div>
@@ -82,7 +92,10 @@
                 <button id="submitScoreBtn" class="stretched-action-btn action-submit">SUBMIT</button>
             </div>
 
-            <button id="restartButton" class="action-btn">DONE</button>
+            <div class="action-row">
+                <button id="restartButton" class="action-btn">DONE</button>
+                <button id="replayButton" class="action-btn side-btn replay-btn">↻</button>
+            </div>
         </div>
     </div>
 
