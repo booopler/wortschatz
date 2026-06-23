@@ -400,16 +400,22 @@ h2 {
 .action-submit {}
 
 .action-save {
+    background-color: #91ca91;
     margin: 0 auto 0px auto;
 }
 
+.action-save:not(:disabled):hover {
+    background-color: #a9e2a8;
+    box-shadow: 0 0 15px rgba(145, 202, 145, 0.4);
+}
+
 .action-cancel {
-    background-color: #bcaeae;
+    background-color: #cb9090;
 }
 
 .action-cancel:not(:disabled):hover {
-    background-color: #d4c6c5;
-    box-shadow: 0 0 15px rgba(188, 174, 174, 0.4);
+    background-color: #e3a8a7;
+    box-shadow: 0 0 15px rgba(203, 144, 144, 0.4);
 }
 
 .slots {
@@ -942,6 +948,9 @@ h2 {
     .divider {
         height: 70px;
     }
+    .leaderboard-title {
+        font-size: 28px;
+    }
     .modal-content {
         padding: 24px 20px;
         gap: 18px;
@@ -981,6 +990,11 @@ h2 {
     }
     .accuracy-number, .score-number {
         font-size: 40px;
+    }
+    .leaderboard-title {
+        font-size: 24px;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
     }
     .modal-content {
         padding: 24px 16px;
